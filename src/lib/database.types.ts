@@ -1,27 +1,59 @@
 export interface Database {
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string;
+          email: string;
+          full_name: string | null;
+          avatar_url: string | null;
+          provider: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email: string;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          provider?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          provider?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       conversations: {
         Row: {
           id: string;
+          user_id: string | null;
           session_id: string;
-          conversation_type: 'claims' | 'recommendation';
+          conversation_type: "claims" | "recommendation";
           context: Record<string, unknown>;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
+          user_id?: string | null;
           session_id: string;
-          conversation_type: 'claims' | 'recommendation';
+          conversation_type: "claims" | "recommendation";
           context?: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
+          user_id?: string | null;
           session_id?: string;
-          conversation_type?: 'claims' | 'recommendation';
+          conversation_type?: "claims" | "recommendation";
           context?: Record<string, unknown>;
           created_at?: string;
           updated_at?: string;
@@ -31,7 +63,7 @@ export interface Database {
         Row: {
           id: string;
           conversation_id: string;
-          role: 'user' | 'assistant';
+          role: "user" | "assistant";
           content: string;
           metadata: Record<string, unknown>;
           created_at: string;
@@ -39,7 +71,7 @@ export interface Database {
         Insert: {
           id?: string;
           conversation_id: string;
-          role: 'user' | 'assistant';
+          role: "user" | "assistant";
           content: string;
           metadata?: Record<string, unknown>;
           created_at?: string;
@@ -47,7 +79,7 @@ export interface Database {
         Update: {
           id?: string;
           conversation_id?: string;
-          role?: 'user' | 'assistant';
+          role?: "user" | "assistant";
           content?: string;
           metadata?: Record<string, unknown>;
           created_at?: string;

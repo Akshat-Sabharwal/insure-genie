@@ -1,9 +1,9 @@
-import { Bot, User } from 'lucide-react';
-import type { Message } from '../types';
+import { Bot, User } from "lucide-react";
+import type { Message } from "../types";
 
 interface MessageListProps {
   messages: Message[];
-  mode: 'claims' | 'recommendation';
+  mode: "claims" | "recommendation";
 }
 
 export function MessageList({ messages, mode }: MessageListProps) {
@@ -11,11 +11,13 @@ export function MessageList({ messages, mode }: MessageListProps) {
     const welcomeMessages = {
       claims: {
         title: "Let's help you file your claim",
-        subtitle: 'Upload your insurance documents or describe your situation to get started.',
+        subtitle:
+          "Upload your insurance documents or describe your situation to get started.",
       },
       recommendation: {
         title: "Let's find the right insurance for you",
-        subtitle: "Tell me about your situation, and I'll recommend the best insurance options.",
+        subtitle:
+          "Tell me about your situation, and I'll recommend the best insurance options.",
       },
     };
 
@@ -39,16 +41,16 @@ export function MessageList({ messages, mode }: MessageListProps) {
       {messages.map((message) => (
         <div
           key={message.id}
-          className={`flex gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+          className={`flex gap-4 ${message.role === "user" ? "flex-row-reverse" : ""}`}
         >
           <div
             className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-              message.role === 'assistant'
-                ? 'bg-blue-100 text-blue-600'
-                : 'bg-gray-200 text-gray-600'
+              message.role === "assistant"
+                ? "bg-blue-100 text-blue-600"
+                : "bg-gray-200 text-gray-600"
             }`}
           >
-            {message.role === 'assistant' ? (
+            {message.role === "assistant" ? (
               <Bot className="w-5 h-5" />
             ) : (
               <User className="w-5 h-5" />
@@ -56,21 +58,19 @@ export function MessageList({ messages, mode }: MessageListProps) {
           </div>
           <div
             className={`flex-1 max-w-3xl ${
-              message.role === 'user' ? 'flex justify-end' : ''
+              message.role === "user" ? "flex justify-end" : ""
             }`}
           >
             <div
               className={`rounded-2xl px-5 py-3 ${
-                message.role === 'assistant'
-                  ? 'bg-white border border-gray-200'
-                  : 'bg-gray-900 text-white'
+                message.role === "assistant"
+                  ? "bg-white border border-gray-200"
+                  : "bg-gray-900 text-white"
               }`}
             >
-              <div className="prose prose-sm max-w-none">
-                <p className="whitespace-pre-wrap leading-relaxed m-0">
-                  {message.content}
-                </p>
-              </div>
+              <p className="whitespace-pre-wrap leading-relaxed m-0">
+                {message.content}
+              </p>
             </div>
           </div>
         </div>

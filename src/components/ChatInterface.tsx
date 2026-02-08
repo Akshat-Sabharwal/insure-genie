@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, Upload, Loader2 } from 'lucide-react';
-import { MessageList } from './MessageList';
-import { DocumentUpload } from './DocumentUpload';
-import type { Message } from '../types';
+import { useState, useRef, useEffect } from "react";
+import { Send, ArrowLeft, Upload, Loader2 } from "lucide-react";
+import { MessageList } from "./MessageList";
+import { DocumentUpload } from "./DocumentUpload";
+import { useAuth } from "../contexts/AuthContext";
+import type { Message } from "../types";
 
 interface ChatInterfaceProps {
-  mode: 'claims' | 'recommendation';
+  mode: "claims" | "recommendation";
   messages: Message[];
   onSendMessage: (content: string) => void;
   onUploadDocument: (file: File) => void;
@@ -13,6 +14,36 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   uploadedDocuments: Array<{ name: string; id: string }>;
 }
+
+const MODE_CONFIG = {
+  claims: {
+    title: "Claims Assistance",
+    color: "blue",
+    placeholder: "Describe your claim situation or ask a question...",
+  },
+  recommendation: {
+    title: "Insurance Recommendations",
+    color: "green",
+    placeholder: "Tell me what you need insurance for...",
+  },
+} as const;
+
+const COLOR_CLASSES = {
+  blue: {
+    bg: "bg-blue-600",
+    hover: "hover:bg-blue-700",
+    text: "text-blue-600",
+    border: "border-blue-200",
+    gradient: "from-blue-50 to-white",
+  },
+  green: {
+    bg: "bg-green-600",
+    hover: "hover:bg-green-700",
+    text: "text-green-600",
+    border: "border-green-200",
+    gradient: "from-green-50 to-white",
+  },
+} as const;
 
 export function ChatInterface({
   mode,
@@ -23,82 +54,64 @@ export function ChatInterface({
   isLoading,
   uploadedDocuments,
 }: ChatInterfaceProps) {
-  const [input, setInput] = useState('');
-  const [showUpload, setShowUpload] = useState(mode === 'claims');
+  const { signOut } = useAuth();
+  const [input, setInput] = useState("");
+  const [showUpload, setShowUpload] = useState(mode === "claims");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const config = MODE_CONFIG[mode];
+  const colors = COLOR_CLASSES[config.color as keyof typeof COLOR_CLASSES];
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    }
+  }, [input]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
       onSendMessage(input.trim());
-      setInput('');
+      setInput("");
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.style.height = 'auto';
-      inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
-    }
-  }, [input]);
-
-  const modeConfig = {
-    claims: {
-      title: 'Claims Assistance',
-      color: 'blue',
-      placeholder: 'Describe your claim situation or ask a question...',
-    },
-    recommendation: {
-      title: 'Insurance Recommendations',
-      color: 'green',
-      placeholder: 'Tell me what you need insurance for...',
-    },
-  };
-
-  const config = modeConfig[mode];
-  const colorClasses = {
-    blue: {
-      bg: 'bg-blue-600',
-      hover: 'hover:bg-blue-700',
-      text: 'text-blue-600',
-      border: 'border-blue-200',
-      gradient: 'from-blue-50 to-white',
-    },
-    green: {
-      bg: 'bg-green-600',
-      hover: 'hover:bg-green-700',
-      text: 'text-green-600',
-      border: 'border-green-200',
-      gradient: 'from-green-50 to-white',
-    },
-  }[config.color];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex flex-col">
-      <header className={`${colorClasses.bg} text-white py-4 px-6 shadow-lg`}>
+      <header className={`${colors.bg} text-white py-4 px-6 shadow-lg`}>
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
             <button
               onClick={onBack}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="Back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <h1 className="text-xl font-semibold">{config.title}</h1>
           </div>
-          {mode === 'claims' && (
+          <div className="flex items-center gap-3">
+            {mode === "claims" && (
+              <button
+                onClick={() => setShowUpload(!showUpload)}
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="text-sm">Upload</span>
+              </button>
+            )}
             <button
-              onClick={() => setShowUpload(!showUpload)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              onClick={() => signOut()}
+              className="px-3 py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
             >
-              <Upload className="w-4 h-4" />
-              <span className="text-sm">Upload Document</span>
+              Sign Out
             </button>
-          )}
+          </div>
         </div>
       </header>
 
-      {showUpload && mode === 'claims' && (
+      {showUpload && (
         <div className="border-b border-gray-200 bg-white">
           <div className="max-w-5xl mx-auto p-4">
             <DocumentUpload
@@ -123,9 +136,9 @@ export function ChatInterface({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(e);
+                  handleSubmit(e as unknown as React.FormEvent);
                 }
               }}
               placeholder={config.placeholder}
@@ -136,7 +149,7 @@ export function ChatInterface({
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className={`${colorClasses.bg} ${colorClasses.hover} text-white px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+              className={`${colors.bg} ${colors.hover} text-white px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
