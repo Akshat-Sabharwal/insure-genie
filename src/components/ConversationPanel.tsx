@@ -15,7 +15,7 @@ export function ConversationPanel({
   refreshKey,
 }: ConversationPanelProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fetchConversations = async () => {
@@ -91,5 +91,6 @@ export function ConversationPanel({
 }
 
 export default ConversationPanel;
+
 
 
