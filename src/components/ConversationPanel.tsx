@@ -51,7 +51,7 @@ export function ConversationPanel({
       className={`flex flex-col ${open ? "w-72" : "w-12"} bg-white border-r border-gray-200 transition-width duration-200`}
     >
       <div
-        className={`flex items-center justify-between ${open ? "p-4" : "p-1 mt-3"} text-xl`}
+        className={`flex items-center justify-between ${open ? "p-4" : "p-1 mt-3"} text-xl max-h-[90vh] overflow-y-scroll`}
       >
         {open && <div className="font-semibold">Conversations</div>}
         <button
@@ -91,3 +91,4 @@ export function ConversationPanel({
 }
 
 export default ConversationPanel;
+
